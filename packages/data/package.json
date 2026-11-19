@@ -1,0 +1,29 @@
+{
+  "name": "@teziko/data",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./art": "./src/art/index.ts",
+    "./images": "./src/lib/images.ts",
+    "./orders": "./src/lib/orders.ts",
+    "./states": "./src/lib/states.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@teziko/types": "workspace:*"
+  },
+  "devDependencies": {
+    "@teziko/config-eslint": "workspace:*",
+    "@teziko/config-typescript": "workspace:*",
+    "@types/node": "22.20.5",
+    "eslint": "9.39.5",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0"
+  }
+}

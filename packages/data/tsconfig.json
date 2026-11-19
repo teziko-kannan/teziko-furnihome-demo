@@ -1,0 +1,4 @@
+{
+  "extends": "@teziko/config-typescript/library.json",
+  "include": ["src"]
+}

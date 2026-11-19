@@ -1,0 +1,19 @@
+/*
+ * Motion support styles. The `js-anim` class is added to <html> by a tiny inline
+ * script (see RevealBootScript). Without JS the class never appears, so nothing is hidden.
+ * If the app bundle fails, the boot script removes the class after a timeout.
+ */
+.js-anim :is([data-reveal], [data-reveal-item]):not([data-reveal-ready]) {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-anim :is([data-reveal], [data-reveal-item]):not([data-reveal-ready]) {
+    opacity: 1;
+  }
+}
+
+[data-marquee]:hover [data-marquee-track],
+[data-marquee]:focus-within [data-marquee-track] {
+  animation-play-state: paused;
+}

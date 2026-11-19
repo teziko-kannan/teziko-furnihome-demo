@@ -1,0 +1,103 @@
+import type { Brand } from "@teziko/types";
+
+/** Fictional demo brands. Any resemblance to real companies is unintended. */
+export const brands: Brand[] = [
+  {
+    slug: "nivaas",
+    name: "Nivaas",
+    tagline: "Soft seating, built to be lived on",
+    origin: "Mumbai",
+    departments: ["furniture"],
+    founded: 2011,
+  },
+  {
+    slug: "vaarta",
+    name: "Vaarta Living",
+    tagline: "Modern forms for Indian homes",
+    origin: "Bengaluru",
+    departments: ["furniture"],
+    founded: 2015,
+  },
+  {
+    slug: "oakhaven",
+    name: "Oakhaven Studio",
+    tagline: "Solid wood, joined by hand",
+    origin: "Jodhpur",
+    departments: ["furniture"],
+    founded: 2006,
+  },
+  {
+    slug: "kosha",
+    name: "Kosha Works",
+    tagline: "Storage and workspaces that fit",
+    origin: "Pune",
+    departments: ["furniture"],
+    founded: 2013,
+  },
+  {
+    slug: "himavat",
+    name: "Himavat",
+    tagline: "Cooling engineered for Indian summers",
+    origin: "Noida",
+    departments: ["appliances"],
+    founded: 1998,
+  },
+  {
+    slug: "lumora",
+    name: "Lumora",
+    tagline: "Pictures that feel like windows",
+    origin: "Chennai",
+    departments: ["appliances"],
+    founded: 2017,
+  },
+  {
+    slug: "dhara",
+    name: "Dhara Home Tech",
+    tagline: "Quiet machines for busy homes",
+    origin: "Ahmedabad",
+    departments: ["appliances"],
+    founded: 2009,
+  },
+  {
+    slug: "rasoika",
+    name: "Rasoika",
+    tagline: "Kitchen tools for everyday cooking",
+    origin: "Coimbatore",
+    departments: ["appliances"],
+    founded: 2004,
+  },
+  {
+    slug: "pavana",
+    name: "Pavana Air",
+    tagline: "Cleaner, cooler air",
+    origin: "Hyderabad",
+    departments: ["appliances"],
+    founded: 2016,
+  },
+  {
+    slug: "mitti-loom",
+    name: "Mitti & Loom",
+    tagline: "Handmade textiles and ceramics",
+    origin: "Jaipur",
+    departments: ["decor"],
+    founded: 2012,
+  },
+  {
+    slug: "deepa",
+    name: "Deepa Lighting Co.",
+    tagline: "Warm light, considered shapes",
+    origin: "Moradabad",
+    departments: ["decor"],
+    founded: 2008,
+  },
+  {
+    slug: "sutradhar",
+    name: "Sutradhar Decor",
+    tagline: "Walls with a story",
+    origin: "Kolkata",
+    departments: ["decor"],
+    founded: 2014,
+  },
+];
+
+export const brandBySlug = new Map(brands.map((b) => [b.slug, b]));

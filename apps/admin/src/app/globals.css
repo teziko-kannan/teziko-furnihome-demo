@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@teziko/config-tailwind/theme.css";
+@import "@teziko/ui/styles.css";
+
+@source "../../../../packages/ui/src";
