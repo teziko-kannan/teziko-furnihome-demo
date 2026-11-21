@@ -1,5 +1,6 @@
 "use client";
 
+import { NO_JS_FORM } from "@/lib/no-js-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { INDIAN_STATES } from "@teziko/data/states";
 import type { Address, CustomerProfile, SessionUser } from "@teziko/types";
@@ -22,7 +23,7 @@ import {
   type AddressInput,
   type ProfileInput,
 } from "@teziko/validators";
-import { MapPinIcon, PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { CheckIcon, MapPinIcon, PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { AnimatePresence, m } from "motion/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -202,6 +203,7 @@ function ProfileForm({
   profile: CustomerProfile;
   onSave: (v: ProfileInput) => Promise<void>;
 }) {
+  const [saved, setSaved] = useState(false);
   const {
     register,
     handleSubmit,
@@ -213,9 +215,11 @@ function ProfileForm({
   });
   return (
     <form
+      {...NO_JS_FORM}
       onSubmit={handleSubmit(async (v) => {
         await onSave(v);
         reset(v);
+        setSaved(true);
       })}
       noValidate
       className="mt-5 grid gap-5 sm:grid-cols-2"
@@ -250,10 +254,20 @@ function ProfileForm({
           className="bg-muted"
         />
       </Field>
-      <div className="flex items-end">
+      <div className="flex items-end gap-3">
         <Button type="submit" disabled={isSubmitting || !isDirty}>
-          Save changes
+          {isSubmitting ? "Saving…" : "Save changes"}
         </Button>
+        <p
+          role="status"
+          className="text-success flex h-11 items-center gap-1.5 text-sm font-medium"
+        >
+          {saved && !isDirty ? (
+            <>
+              <CheckIcon className="size-4" aria-hidden="true" /> Profile saved
+            </>
+          ) : null}
+        </p>
       </div>
     </form>
   );
@@ -323,7 +337,12 @@ function AddressDialog({
             Stored for this demo only and deleted after 14 days.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSave)} noValidate className="grid gap-4 sm:grid-cols-2">
+        <form
+          {...NO_JS_FORM}
+          onSubmit={handleSubmit(onSave)}
+          noValidate
+          className="grid gap-4 sm:grid-cols-2"
+        >
           {f("label", "Label (e.g. Home, Office)")}
           {f("fullName", "Full name", { autoComplete: "name" })}
           {f("phone", "Mobile number", { type: "tel", inputMode: "numeric", maxLength: 10 })}

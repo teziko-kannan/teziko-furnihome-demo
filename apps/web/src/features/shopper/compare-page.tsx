@@ -19,6 +19,7 @@ export function ComparePage() {
   const ids = useCompare((s) => s.ids);
   const remove = useCompare((s) => s.remove);
   const clear = useCompare((s) => s.clear);
+  const category = useCompare((s) => s.category);
   const addToCart = useAddToCart();
   const { products, loading, error } = useProductsById(hydrated ? ids : [], { full: true });
 
@@ -56,14 +57,19 @@ export function ComparePage() {
     <>
       <div className="mb-4 flex items-center justify-between">
         <p className="text-muted-foreground text-sm">
-          {products.length} of {COMPARE_MAX} products
+          Comparing {products.length} of {COMPARE_MAX}
+          {category ? ` · ${category.name}` : ""}
         </p>
         <Button variant="ghost" size="sm" onClick={clear}>
           Clear all
         </Button>
       </div>
-      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        <table className="w-full min-w-[640px] table-fixed border-collapse text-sm">
+      {/* relative: absolutely positioned children (rating stars) must be clipped by this scroller. */}
+      <div className="relative -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+        <table
+          className="w-full table-fixed border-collapse text-sm"
+          style={{ minWidth: 140 + products.length * 170 }}
+        >
           <caption className="sr-only">Product comparison</caption>
           <thead>
             <tr>

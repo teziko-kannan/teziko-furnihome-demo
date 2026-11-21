@@ -1,5 +1,6 @@
 "use client";
 
+import { NO_JS_FORM } from "@/lib/no-js-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Badge } from "@teziko/ui/components/badge";
 import { Button } from "@teziko/ui/components/button";
@@ -181,7 +182,7 @@ function ReviewDialog({
             Share what you think. This is a demo: your review stays in this browser.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4" noValidate>
+        <form {...NO_JS_FORM} onSubmit={handleSubmit(onSubmit)} className="grid gap-4" noValidate>
           <Controller
             control={control}
             name="rating"

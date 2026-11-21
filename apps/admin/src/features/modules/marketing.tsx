@@ -1,5 +1,6 @@
 "use client";
 
+import { NO_JS_FORM } from "@/lib/no-js-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getKindImage } from "@teziko/data/images";
 import type { Banner, Coupon, Review } from "@teziko/types";
@@ -141,7 +142,12 @@ function NewCouponDialog({
           <DialogTitle>New coupon</DialogTitle>
           <DialogDescription>Demo only: saved in this browser for 14 days.</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-4 sm:grid-cols-2">
+        <form
+          {...NO_JS_FORM}
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          className="grid gap-4 sm:grid-cols-2"
+        >
           <Field id="cp-code" label="Code" error={errors.code?.message} required>
             <Input
               id="cp-code"

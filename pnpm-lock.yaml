@@ -401,6 +401,9 @@ importers:
 
   packages/validators:
     dependencies:
+      '@teziko/data':
+        specifier: workspace:*
+        version: link:../data
       zod:
         specifier: 4.6.7
         version: 4.6.7

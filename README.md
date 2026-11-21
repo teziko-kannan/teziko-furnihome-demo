@@ -1,4 +1,4 @@
-# Teziko Home: furniture & appliances demo store
+# Home Vibe: furniture & appliances demo store
 
 A premium, animated **demo** e-commerce store (storefront + admin) built as a pnpm + Turborepo monorepo.
 
@@ -79,9 +79,9 @@ Extra packages beyond the brief, and why:
 ## Verification (last run 2026-11-19)
 
 - `pnpm lint`, `pnpm typecheck`, `pnpm format:check`: pass (all workspaces).
-- `pnpm test`: 30 unit tests pass (data 19, validators 5, ui 3, web 3).
+- `pnpm test`: 38 unit tests pass (data 27, validators 5, ui 3, web 3).
 - `pnpm build`: both apps build; 65 product pages are statically generated.
-- `pnpm test:e2e`: 9 Playwright tests pass. They cover browsing, URL-synced filters, cart and coupon, simulated payment success and failure, the account guard, server-side total recomputation, the honeypot and the 404 page, plus a 360px mobile layout test.
+- `pnpm test:e2e`: 18 Playwright tests pass, including regression tests for the QA bug list (registered sign-in, POST-only forms, no email in order URLs, PIN/state validation, search synonyms, same-category compare, real 404s). They cover browsing, URL-synced filters, cart and coupon, simulated payment success and failure, the account guard, server-side total recomputation, the honeypot and the 404 page, plus a 360px mobile layout test.
 - Responsive sweep: 34 storefront and admin pages at 320, 360, 390, 768 and 1440px, with no horizontal overflow and no console errors.
 - Lighthouse 13.6 (local production build):
 

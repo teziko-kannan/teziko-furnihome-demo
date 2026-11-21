@@ -16,13 +16,13 @@ export function Logo({
         className,
       )}
     >
-      teziko
+      Home
       <span
         aria-hidden="true"
         className="bg-accent inline-block size-2 translate-y-[-2px] rounded-full"
       />
       <span className="ml-1 font-sans text-[11px] font-semibold tracking-[0.2em] uppercase opacity-70">
-        Home
+        Vibe
       </span>
     </span>
   );

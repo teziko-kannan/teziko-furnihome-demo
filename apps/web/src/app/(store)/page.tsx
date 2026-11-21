@@ -31,7 +31,6 @@ export default function HomePage() {
 
   return (
     <>
-      <h1 className="sr-only">{site.name}: furniture, home appliances and decor (demo store)</h1>
       <Hero
         eyebrow={hero.eyebrow}
         title={hero.title}

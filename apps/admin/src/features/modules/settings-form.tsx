@@ -10,6 +10,7 @@ import { useHydrated } from "@teziko/ui/hooks/use-hydrated";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useOverrides } from "../overrides/store";
+import { NO_JS_FORM } from "@/lib/no-js-form";
 
 const schema = z.object({
   storeName: z.string().trim().min(2).max(60),
@@ -21,8 +22,8 @@ const schema = z.object({
 type Values = z.infer<typeof schema>;
 
 const DEFAULTS: Values = {
-  storeName: "Teziko Home",
-  supportEmail: "support@teziko-demo.example",
+  storeName: "Home Vibe",
+  supportEmail: "support@homevibe-demo.example",
   freeShippingThreshold: 4999,
   codEnabled: true,
   maintenance: false,
@@ -53,6 +54,7 @@ export function SettingsForm() {
   return (
     <div className="grid max-w-2xl gap-8">
       <form
+        {...NO_JS_FORM}
         onSubmit={handleSubmit((v) => {
           save({ ...v, at: new Date().toISOString() });
           toast.success("Settings saved", {

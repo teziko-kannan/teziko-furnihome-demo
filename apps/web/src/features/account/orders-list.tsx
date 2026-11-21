@@ -58,36 +58,53 @@ export function OrdersList({ email }: { email: string }) {
       <StateBlock
         icon={PackageIcon}
         title="No orders yet"
-        description="Orders you place in this browser appear here for 14 days."
+        description={`Orders placed while signed in as ${email} appear here for 14 days. Ordered as a guest? Use Track order with your order number.`}
         action={
-          <Button asChild>
-            <Link href="/shop">Start shopping</Link>
-          </Button>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button asChild>
+              <Link href="/shop">Start shopping</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/track-order">Track a guest order</Link>
+            </Button>
+          </div>
         }
       />
     );
   }
   return (
-    <ul className="divide-border border-border divide-y rounded-2xl border">
-      {orders.map((o) => (
-        <li key={o.number}>
-          <Link
-            href={`/order/${o.number}?email=${encodeURIComponent(o.email)}`}
-            className="hover:bg-muted/60 flex flex-wrap items-center gap-x-6 gap-y-2 p-4 transition-colors sm:p-5"
-          >
-            <div className="min-w-0 flex-1">
-              <p className="font-semibold">{o.number}</p>
-              <p className="text-muted-foreground text-xs">
-                {formatDate(o.createdAt)} · {o.pricing.itemCount} item
-                {o.pricing.itemCount === 1 ? "" : "s"}
-              </p>
-            </div>
-            <Badge variant={statusVariant(o.status)}>{ORDER_STATUS_LABEL[o.status]}</Badge>
-            <span className="font-semibold tabular-nums">{formatINR(o.pricing.total)}</span>
-            <ChevronRightIcon className="text-muted-foreground size-4" aria-hidden="true" />
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <>
+      <p className="text-muted-foreground mb-4 text-sm">
+        Orders placed while signed in as {email}. Ordered as a guest?{" "}
+        <Link
+          href="/track-order"
+          className="text-foreground font-medium underline underline-offset-4"
+        >
+          Track it with your order number
+        </Link>
+        .
+      </p>
+      <ul className="divide-border border-border divide-y rounded-2xl border">
+        {orders.map((o) => (
+          <li key={o.number}>
+            <Link
+              href={`/order/${o.number}`}
+              className="hover:bg-muted/60 flex flex-wrap items-center gap-x-6 gap-y-2 p-4 transition-colors sm:p-5"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold">{o.number}</p>
+                <p className="text-muted-foreground text-xs">
+                  {formatDate(o.createdAt)} · {o.pricing.itemCount} item
+                  {o.pricing.itemCount === 1 ? "" : "s"}
+                </p>
+              </div>
+              <Badge variant={statusVariant(o.status)}>{ORDER_STATUS_LABEL[o.status]}</Badge>
+              <span className="font-semibold tabular-nums">{formatINR(o.pricing.total)}</span>
+              <ChevronRightIcon className="text-muted-foreground size-4" aria-hidden="true" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }

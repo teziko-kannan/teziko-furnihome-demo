@@ -4,6 +4,7 @@ import {
   getCategoryImage,
   getSubcategories,
   products,
+  searchFields,
 } from "@teziko/data";
 import type { ProductImage } from "@teziko/data/images";
 
@@ -26,6 +27,7 @@ export interface SearchEntry {
   kind: string;
   hex: string;
   keywords: string;
+  body: string;
 }
 
 /** Built on the server and passed to client chrome, so the full catalogue never ships to the browser. */
@@ -62,8 +64,7 @@ export function buildSearchIndex(): SearchEntry[] {
     price: p.price,
     kind: p.kind,
     hex: p.variants[0]!.colour.hex.replace("#", ""),
-    keywords: [p.kind, ...p.tags, ...p.materials, ...p.variants.map((v) => v.colour.name)].join(
-      " ",
-    ),
+    keywords: searchFields(p).keywords,
+    body: `${searchFields(p).body} ${p.variants.map((v) => v.colour.name).join(" ")}`,
   }));
 }

@@ -581,7 +581,7 @@ export const furniture: ProductDef[] = [
   {
     name: "Strata 3-Door Wardrobe with Mirror",
     brand: "kosha",
-    sub: "storage",
+    sub: "wardrobes",
     kind: "wardrobe",
     price: 38999,
     mrp: 54999,
@@ -605,7 +605,7 @@ export const furniture: ProductDef[] = [
   {
     name: "Alma Sliding 2-Door Wardrobe",
     brand: "kosha",
-    sub: "storage",
+    sub: "wardrobes",
     kind: "wardrobe",
     price: 47499,
     mrp: 66999,

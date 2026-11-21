@@ -10,6 +10,7 @@ import { AnimatePresence, m } from "motion/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { getDataAdapter } from "../data-access";
+import { NO_JS_FORM } from "@/lib/no-js-form";
 
 export function Newsletter() {
   const [done, setDone] = useState(false);
@@ -77,6 +78,7 @@ export function Newsletter() {
               </m.p>
             ) : (
               <m.form
+                {...NO_JS_FORM}
                 key="form"
                 exit={{ opacity: 0, y: -10 }}
                 onSubmit={handleSubmit(onSubmit)}

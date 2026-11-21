@@ -9,6 +9,7 @@ import { CheckCircle2Icon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { getDataAdapter } from "../data-access";
+import { NO_JS_FORM } from "@/lib/no-js-form";
 
 export function ContactForm() {
   const [sent, setSent] = useState(false);
@@ -65,7 +66,12 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5 sm:grid-cols-2">
+    <form
+      {...NO_JS_FORM}
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      className="grid gap-5 sm:grid-cols-2"
+    >
       <Field id="c-name" label="Name" error={errors.name?.message} required>
         <Input
           id="c-name"

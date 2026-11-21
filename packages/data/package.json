@@ -8,7 +8,9 @@
     "./art": "./src/art/index.ts",
     "./images": "./src/lib/images.ts",
     "./orders": "./src/lib/orders.ts",
-    "./states": "./src/lib/states.ts"
+    "./states": "./src/lib/states.ts",
+    "./search": "./src/lib/search.ts",
+    "./pincode": "./src/lib/pincode.ts"
   },
   "scripts": {
     "lint": "eslint .",

@@ -8,9 +8,9 @@ import { PageShell } from "@/components/page-shell";
 import { ProductImage } from "@/components/product-image";
 
 export const metadata: Metadata = {
-  title: "About Teziko Home",
+  title: "About Home Vibe",
   description:
-    "Teziko Home is a demonstration storefront built by Teziko Solutions to show a modern furniture and appliance shopping experience.",
+    "Home Vibe is a demonstration storefront built by Teziko Solutions to show a modern furniture and appliance shopping experience.",
   alternates: { canonical: "/about" },
 };
 
@@ -30,13 +30,13 @@ export default function Page() {
     },
   ];
   return (
-    <PageShell title="About Teziko Home" crumbs={[{ label: "About" }]}>
+    <PageShell title="About Home Vibe" crumbs={[{ label: "About" }]}>
       <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
         <Reveal className="text-foreground/90 space-y-4 text-[17px] leading-relaxed">
           <p>
-            Teziko Home is a <strong>demonstration store</strong> built by Teziko Solutions. It
-            shows how a premium furniture, appliance and decor brand could sell online: fast
-            browsing, honest pricing, and calm, considered design.
+            Home Vibe is a <strong>demonstration store</strong> built by Teziko Solutions. It shows
+            how a premium furniture, appliance and decor brand could sell online: fast browsing,
+            honest pricing, and calm, considered design.
           </p>
           <p>
             The catalogue has {products.length} products from {brands.length} fictional brands.

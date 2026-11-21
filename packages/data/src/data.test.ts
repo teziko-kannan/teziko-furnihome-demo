@@ -162,3 +162,65 @@ describe("art", () => {
     expect(parseArtFile("9-8c8c88.svg")).toBeNull();
   });
 });
+
+import { relatedProducts as related } from "./lib/queries";
+import { checkAddressConsistency, deliveryEstimate, statesForPincode } from "./lib/pincode";
+import { scoreSearch } from "./lib/search";
+
+describe("search synonyms", () => {
+  it("finds all refrigerators for 'fridge' and 'refrigerator' alike", () => {
+    const a = listProducts({}, parseFilters({ q: "fridge" })).total;
+    const b = listProducts({}, parseFilters({ q: "refrigerator" })).total;
+    expect(a).toBe(4);
+    expect(b).toBe(4);
+  });
+  it("does not match a study desk for 'fridge'", () => {
+    expect(
+      scoreSearch("fridge", {
+        name: "Focus Study Desk",
+        keywords: "Study & Office desk Kosha Works",
+      }),
+    ).toBeLessThanOrEqual(0);
+  });
+  it("'ac' does not match words that merely contain the letters", () => {
+    const names = listProducts({}, parseFilters({ q: "ac" })).items.map((p) => p.kind);
+    expect(names.every((k) => k === "air-conditioner")).toBe(true);
+  });
+});
+
+describe("pincode", () => {
+  it("maps PINs to states and rejects fake ones", () => {
+    expect(statesForPincode("110001")).toContain("Delhi");
+    expect(statesForPincode("737101")[0]).toBe("Sikkim");
+    expect(statesForPincode("999999")).toEqual([]);
+  });
+  it("catches PIN/state/city mismatches", () => {
+    expect(checkAddressConsistency({ pincode: "110001", state: "Kerala", city: "Mumbai" }).ok).toBe(
+      false,
+    );
+    expect(checkAddressConsistency({ pincode: "400001", state: "Kerala", city: "Mumbai" }).ok).toBe(
+      false,
+    );
+    expect(
+      checkAddressConsistency({ pincode: "400001", state: "Maharashtra", city: "Mumbai" }).ok,
+    ).toBe(true);
+  });
+  it("gives farther states longer delivery windows", () => {
+    expect(deliveryEstimate("400001", [5, 10])!.days[0]).toBeLessThan(
+      deliveryEstimate("793001", [5, 10])!.days[0],
+    );
+  });
+});
+
+describe("related products", () => {
+  it("only suggests the same or complementary categories for a sofa", () => {
+    const sofa = productBySlug.get("arden-3-seater-fabric-sofa")!;
+    const allowed = ["sofas", "armchairs", "tables", "rugs", "cushions-throws", "lighting"];
+    expect(related(sofa).every((p) => allowed.includes(p.subcategory))).toBe(true);
+  });
+  it("puts wardrobes in their own category", () => {
+    expect(
+      products.filter((p) => p.kind === "wardrobe").every((p) => p.subcategory === "wardrobes"),
+    ).toBe(true);
+  });
+});

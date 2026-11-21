@@ -212,7 +212,7 @@ export const faqs: {
   {
     group: "Demo",
     q: "Is this a real store?",
-    a: "No. Teziko Home is a demonstration store. Orders are not fulfilled, no money is charged and all data you enter is deleted automatically after 14 days.",
+    a: "No. Home Vibe is a demonstration store. Orders are not fulfilled, no money is charged and all data you enter is deleted automatically after 14 days.",
   },
   {
     group: "Orders",

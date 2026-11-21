@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { OrderDetails } from "./order-details";
 import { useOrder } from "./use-order";
+import { NO_JS_FORM } from "@/lib/no-js-form";
 
 export function TrackOrder({ initial }: { initial?: Partial<TrackOrderInput> }) {
   const [query, setQuery] = useState<TrackOrderInput | null>(
@@ -28,6 +29,7 @@ export function TrackOrder({ initial }: { initial?: Partial<TrackOrderInput> }) 
   return (
     <div className="space-y-10">
       <form
+        {...NO_JS_FORM}
         onSubmit={handleSubmit(setQuery)}
         noValidate
         className="grid max-w-2xl gap-4 sm:grid-cols-[1fr_1fr_auto] sm:items-end"

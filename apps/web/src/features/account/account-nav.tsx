@@ -3,7 +3,7 @@
 import { Button } from "@teziko/ui/components/button";
 import { LogOutIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/format";
 import { useSession } from "./use-session";
 
@@ -16,7 +16,6 @@ const LINKS = [
 
 export function AccountNav() {
   const pathname = usePathname();
-  const router = useRouter();
   const logout = useSession((s) => s.logout);
   return (
     <nav aria-label="Account" className="flex gap-1 overflow-x-auto lg:flex-col">
@@ -38,7 +37,8 @@ export function AccountNav() {
         className="shrink-0 justify-start rounded-full lg:mt-4 lg:rounded-lg"
         onClick={async () => {
           await logout();
-          router.push("/");
+          // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- auth change: a full load clears router-cached pages rendered for the previous session.
+          window.location.assign("/");
         }}
       >
         <LogOutIcon aria-hidden="true" /> Sign out

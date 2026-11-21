@@ -148,7 +148,9 @@ export function ProductCard({
           )}
           <button
             type="button"
-            onClick={() => toggleCompare(p.id, p.name)}
+            onClick={() =>
+              toggleCompare(p.id, p.name, { slug: p.subcategory, name: p.subcategoryName })
+            }
             aria-pressed={inCompare}
             className={cn(
               "inline-flex h-8 items-center gap-1 rounded-full px-2 text-xs font-medium transition-colors",

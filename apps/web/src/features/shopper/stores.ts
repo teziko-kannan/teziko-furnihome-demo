@@ -90,29 +90,49 @@ export const useWishlist = create<IdListState>()(
 
 export const COMPARE_MAX = 4;
 
-interface CompareState extends Omit<IdListState, "toggle"> {
-  /** Returns "added", "removed" or "full". */
-  toggle: (id: string) => "added" | "removed" | "full";
+export interface CompareCategory {
+  slug: string;
+  name: string;
+}
+
+interface CompareState {
+  ids: string[];
+  /** Subcategory being compared: only like-for-like products can be compared side by side. */
+  category: CompareCategory | null;
+  toggle: (id: string, category: CompareCategory) => "added" | "removed" | "full" | "mismatch";
+  /** Starts a new comparison with this product (offered after a category mismatch). */
+  replace: (id: string, category: CompareCategory) => void;
+  remove: (id: string) => void;
+  clear: () => void;
 }
 
 export const useCompare = create<CompareState>()(
   persist(
     (set, get) => ({
       ids: [],
-      toggle: (id) => {
-        const ids = get().ids;
+      category: null,
+      toggle: (id, category) => {
+        const { ids, category: current } = get();
         if (ids.includes(id)) {
-          set({ ids: ids.filter((x) => x !== id) });
+          const next = ids.filter((x) => x !== id);
+          set({ ids: next, category: next.length ? current : null });
           return "removed";
         }
+        if (ids.length > 0 && current && current.slug !== category.slug) return "mismatch";
         if (ids.length >= COMPARE_MAX) return "full";
-        set({ ids: [...ids, id] });
+        set({ ids: [...ids, id], category });
         return "added";
       },
-      remove: (id) => set((s) => ({ ids: s.ids.filter((x) => x !== id) })),
-      clear: () => set({ ids: [] }),
+      replace: (id, category) => set({ ids: [id], category }),
+      remove: (id) =>
+        set((s) => {
+          const ids = s.ids.filter((x) => x !== id);
+          return { ids, category: ids.length ? s.category : null };
+        }),
+      clear: () => set({ ids: [], category: null }),
     }),
-    { name: "tz-compare", storage, version: 1 },
+    // v2 adds the category lock; lists saved by v1 may mix categories, so they are cleared.
+    { name: "tz-compare", storage, version: 2, migrate: () => ({ ids: [], category: null }) },
   ),
 );
 

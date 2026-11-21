@@ -18,6 +18,17 @@ const PAYMENT_LABEL = {
   cod: "Cash on delivery",
 } as const;
 
+/** Human-readable payment line, e.g. "UPI · Paid" or "Cash on delivery · Pay when it arrives". */
+function paymentLabel(order: Order) {
+  const status = {
+    paid: "Paid",
+    pending: "Pending",
+    failed: "Failed",
+    cod: "Pay when it arrives",
+  }[order.paymentStatus];
+  return `${PAYMENT_LABEL[order.paymentMethod]} · ${status}`;
+}
+
 export function statusVariant(status: Order["status"]) {
   if (status === "delivered") return "success" as const;
   if (status === "cancelled" || status === "payment-failed") return "error" as const;
@@ -93,17 +104,18 @@ export function OrderDetails({
           <h2 className="font-sans text-base font-semibold tracking-normal">Summary</h2>
           <dl className="mt-3 space-y-2">
             <Row label="Placed" value={formatDateTime(order.createdAt)} />
-            <Row
-              label="Payment"
-              value={`${PAYMENT_LABEL[order.paymentMethod]} · ${order.paymentStatus}`}
-            />
-            <Row label="Subtotal" value={formatINR(p.subtotal)} />
+            <Row label="Payment" value={paymentLabel(order)} />
+            <Row label="Items" value={formatINR(p.subtotal)} />
             {p.couponDiscount ? (
               <Row label={`Coupon ${p.couponCode}`} value={`−${formatINR(p.couponDiscount)}`} />
             ) : null}
-            <Row label="Delivery" value={p.shipping ? formatINR(p.shipping) : "Free"} />
+            <Row
+              label="Taxable value"
+              value={formatINR(p.subtotal - p.couponDiscount - p.gstIncluded)}
+            />
+            <Row label="GST" value={formatINR(p.gstIncluded)} />
+            <Row label="Shipping" value={p.shipping ? formatINR(p.shipping) : "Free"} />
             <Row label="Total" value={<strong>{formatINR(p.total)}</strong>} />
-            <Row label="GST included" value={formatINR(p.gstIncluded)} />
           </dl>
         </div>
         <div>

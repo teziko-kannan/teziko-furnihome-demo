@@ -2,6 +2,7 @@ import type { Department, FilterState, Product, SortKey, StockStatus } from "@te
 import { brandBySlug } from "../catalog/brands";
 import { categoryBySlug } from "../catalog/categories";
 import { products } from "../catalog";
+import { expandQuery, scoreSearch, type SearchFields } from "./search";
 
 export const PAGE_SIZE = 12;
 export const LOW_STOCK_THRESHOLD = 5;
@@ -20,34 +21,27 @@ export function productStockStatus(p: Product) {
   return stockStatus(totalStock(p));
 }
 
-function normalise(s: string) {
-  return s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[^a-z0-9 ]/g, " ");
+/** Lightweight relevance search over name, brand, category and tags. */
+/** Searchable fields for a product, shared by listing search and the search palette index. */
+export function searchFields(p: Product): SearchFields {
+  const brand = brandBySlug.get(p.brand)?.name ?? "";
+  const cat = categoryBySlug.get(p.subcategory)?.name ?? "";
+  return {
+    name: p.name,
+    keywords: `${cat} ${p.kind.replace(/-/g, " ")} ${brand}`,
+    body: `${p.tags.join(" ")} ${p.materials.join(" ")} ${p.shortDescription}`,
+  };
 }
 
-/** Lightweight relevance search over name, brand, category and tags. */
+/** Relevance search with synonyms (e.g. "fridge" → refrigerators). */
 export function searchProducts(query: string, list: Product[] = products): Product[] {
-  const terms = normalise(query).split(/\s+/).filter(Boolean);
-  if (terms.length === 0) return list;
-  const scored = list
-    .map((p) => {
-      const brand = brandBySlug.get(p.brand)?.name ?? "";
-      const cat = categoryBySlug.get(p.subcategory)?.name ?? "";
-      const hay = normalise(
-        `${p.name} ${brand} ${cat} ${p.kind} ${p.tags.join(" ")} ${p.shortDescription}`,
-      );
-      const name = normalise(p.name);
-      let score = 0;
-      for (const t of terms) {
-        if (!hay.includes(t)) return { p, score: -1 };
-        score += name.includes(t) ? 3 : 1;
-      }
-      return { p, score };
-    })
-    .filter((x) => x.score > 0);
-  return scored.sort((a, b) => b.score - a.score || b.p.sold - a.p.sold).map((x) => x.p);
+  const groups = expandQuery(query);
+  if (groups.length === 0) return list;
+  return list
+    .map((p) => ({ p, score: scoreSearch(groups, searchFields(p)) }))
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score || b.p.sold - a.p.sold)
+    .map((x) => x.p);
 }
 
 export function allColours(list: Product[]) {
@@ -185,14 +179,42 @@ export function parseFilters(sp: Params): FilterState {
   };
 }
 
+/** Categories that are bought together with a given subcategory (shown after same-category items). */
+const COMPLEMENTS: Record<string, string[]> = {
+  sofas: ["armchairs", "tables", "rugs", "cushions-throws", "lighting"],
+  armchairs: ["sofas", "tables", "lighting", "cushions-throws"],
+  beds: ["wardrobes", "lighting", "cushions-throws", "rugs"],
+  dining: ["lighting", "vases-planters", "wall-decor"],
+  tables: ["sofas", "armchairs", "rugs", "vases-planters"],
+  wardrobes: ["beds", "mirrors", "storage"],
+  storage: ["televisions", "wall-decor", "vases-planters"],
+  "study-office": ["lighting", "storage", "wall-decor"],
+  refrigerators: ["kitchen-appliances"],
+  "washing-machines": ["kitchen-appliances"],
+  televisions: ["storage", "air-conditioners"],
+  "air-conditioners": ["air-purifiers"],
+  "kitchen-appliances": ["refrigerators"],
+  "air-purifiers": ["air-conditioners"],
+  lighting: ["sofas", "armchairs", "wall-decor"],
+  rugs: ["sofas", "tables", "cushions-throws"],
+  mirrors: ["wardrobes", "wall-decor"],
+  "wall-decor": ["mirrors", "lighting", "vases-planters"],
+  "vases-planters": ["wall-decor", "tables"],
+  "cushions-throws": ["sofas", "rugs"],
+};
+
+/** Same-subcategory products first, then complementary categories. Never unrelated filler. */
 export function relatedProducts(p: Product, n = 8) {
+  const complements = COMPLEMENTS[p.subcategory] ?? [];
+  const rank = (x: Product) =>
+    x.subcategory === p.subcategory
+      ? 0
+      : complements.includes(x.subcategory)
+        ? 1 + complements.indexOf(x.subcategory)
+        : -1;
   return products
-    .filter((x) => x.id !== p.id && (x.subcategory === p.subcategory || x.category === p.category))
-    .sort(
-      (a, b) =>
-        Number(b.subcategory === p.subcategory) - Number(a.subcategory === p.subcategory) ||
-        b.sold - a.sold,
-    )
+    .filter((x) => x.id !== p.id && rank(x) >= 0)
+    .sort((a, b) => rank(a) - rank(b) || b.sold - a.sold)
     .slice(0, n);
 }
 

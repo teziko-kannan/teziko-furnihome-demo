@@ -7,7 +7,7 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Contact us",
   description:
-    "Questions about a product, delivery or returns? Send the Teziko Home demo team a message.",
+    "Questions about a product, delivery or returns? Send the Home Vibe demo team a message.",
   alternates: { canonical: "/contact" },
 };
 

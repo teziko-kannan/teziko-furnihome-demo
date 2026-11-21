@@ -5,13 +5,15 @@ import { INDIAN_STATES } from "@teziko/data/states";
 import { Button } from "@teziko/ui/components/button";
 import { Input, NativeSelect } from "@teziko/ui/components/input";
 import { describedBy, Field } from "@teziko/ui/components/label";
-import { addressSchema, emailSchema } from "@teziko/validators";
+import { addressFields, emailSchema, refineAddress } from "@teziko/validators";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
+import { NO_JS_FORM } from "@/lib/no-js-form";
 
-export const checkoutAddressSchema = addressSchema
+export const checkoutAddressSchema = addressFields
   .omit({ label: true })
-  .extend({ email: emailSchema });
+  .extend({ email: emailSchema })
+  .superRefine(refineAddress);
 export type CheckoutAddress = z.infer<typeof checkoutAddressSchema>;
 
 export function AddressForm({
@@ -60,7 +62,7 @@ export function AddressForm({
   );
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5">
+    <form {...NO_JS_FORM} onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5">
       <fieldset className="grid gap-5">
         <legend className="mb-1 font-sans text-lg font-semibold">Contact</legend>
         {field("email", "Email", { type: "email", autoComplete: "email" })}

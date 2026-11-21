@@ -3,12 +3,12 @@
 import { useHydrated } from "@teziko/ui/hooks/use-hydrated";
 import { usePrefersReducedMotion } from "@teziko/ui/hooks/use-reduced-motion";
 import {
+  ChevronDownIcon,
   GitCompareArrowsIcon,
   HeartIcon,
   MenuIcon,
   SearchIcon,
   ShoppingBagIcon,
-  UserIcon,
 } from "lucide-react";
 import { m, useMotionValueEvent, useScroll } from "motion/react";
 import Link from "next/link";
@@ -16,6 +16,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/format";
 import { useCart, useCompare, useUi, useWishlist } from "../shopper/stores";
+import { AccountMenu } from "./account-menu";
 import { Logo } from "./logo";
 import { MegaMenu } from "./mega-menu";
 import { MobileNav } from "./mobile-nav";
@@ -108,27 +109,56 @@ export function Header({ nav }: { nav: NavDepartment[] }) {
       <nav aria-label="Main" className="relative hidden border-t border-white/10 lg:block">
         <ul className="container-page flex h-12 items-center gap-1">
           {nav.map((d) => (
-            <li key={d.slug}>
-              <button
-                type="button"
-                aria-expanded={menuOpen === d.slug}
-                aria-controls={`mega-${d.slug}`}
-                onClick={() => setMenuOpen((m) => (m === d.slug ? null : d.slug))}
-                onPointerEnter={(e) => e.pointerType === "mouse" && setMenuOpen(d.slug)}
+            <li
+              key={d.slug}
+              className="relative flex items-center"
+              onPointerEnter={(e) => e.pointerType === "mouse" && setMenuOpen(d.slug)}
+            >
+              {/* The name navigates to the department; hover (mouse) or the chevron opens the mega menu. */}
+              <Link
+                href={d.href}
+                onClick={() => setMenuOpen(null)}
                 className={cn(
-                  "relative inline-flex h-12 items-center px-3 text-sm font-medium transition-colors hover:text-white",
+                  "inline-flex h-12 items-center pl-3 text-sm font-medium transition-colors hover:text-white",
                   menuOpen === d.slug ? "text-white" : "text-chrome-foreground/85",
                 )}
               >
                 {d.name}
-                <span
+              </Link>
+              <button
+                type="button"
+                aria-expanded={menuOpen === d.slug}
+                aria-controls={`mega-${d.slug}`}
+                aria-label={`${menuOpen === d.slug ? "Close" : "Open"} ${d.name} menu`}
+                onClick={(e) =>
+                  // Mouse clicks always open (hover already opened it); keyboard/touch toggles.
+                  setMenuOpen((m) =>
+                    e.detail > 0 &&
+                    e.nativeEvent instanceof PointerEvent &&
+                    e.nativeEvent.pointerType === "mouse"
+                      ? d.slug
+                      : m === d.slug
+                        ? null
+                        : d.slug,
+                  )
+                }
+                className="text-chrome-foreground/70 inline-flex h-12 items-center pr-3 pl-1 transition-colors hover:text-white"
+              >
+                <ChevronDownIcon
                   aria-hidden="true"
                   className={cn(
-                    "bg-accent absolute inset-x-3 bottom-0 h-0.5 origin-left transition-transform duration-300",
-                    menuOpen === d.slug ? "scale-x-100" : "scale-x-0",
+                    "size-3.5 transition-transform duration-200",
+                    menuOpen === d.slug && "rotate-180",
                   )}
                 />
               </button>
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "bg-accent pointer-events-none absolute inset-x-3 bottom-0 h-0.5 origin-left transition-transform duration-300",
+                  menuOpen === d.slug ? "scale-x-100" : "scale-x-0",
+                )}
+              />
             </li>
           ))}
           {[
@@ -192,13 +222,7 @@ function HeaderActions({ onSearch }: { onSearch: () => void }) {
       >
         <SearchIcon className="size-5" />
       </button>
-      <Link
-        href="/account"
-        className={cn(iconBtn, "hidden sm:inline-flex")}
-        aria-label="My account"
-      >
-        <UserIcon className="size-5" />
-      </Link>
+      <AccountMenu iconClassName={cn(iconBtn, "hidden sm:inline-flex")} />
       <Link
         href="/compare"
         className={cn(iconBtn, "hidden sm:inline-flex")}

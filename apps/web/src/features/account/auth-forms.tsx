@@ -14,8 +14,11 @@ import {
 } from "@teziko/validators";
 import { CopyIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { NO_JS_FORM } from "@/lib/no-js-form";
+import { site } from "@/lib/site";
+import { localAccountExists, saveLocalAccount, verifyLocalAccount } from "./local-accounts";
 import {
   useForm,
   type FieldValues,
@@ -77,7 +80,6 @@ function TextField<T extends FieldValues>({
 }
 
 export function LoginForm() {
-  const router = useRouter();
   const sp = useSearchParams();
   const setUser = useSession((s) => s.set);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -93,24 +95,39 @@ export function LoginForm() {
 
   async function onSubmit(values: LoginInput) {
     setServerError(null);
-    const res = await fetch("/api/auth/login", {
+    let res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(values),
     });
+    // Not a demo account: try an account registered in this browser (password checked locally).
+    if (res.status === 401 && localAccountExists(values.email)) {
+      const name = await verifyLocalAccount(values.email, values.password);
+      if (name) {
+        res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ name, email: values.email, password: values.password }),
+        });
+      }
+    }
     const json = (await res.json().catch(() => ({}))) as {
       ok?: boolean;
       error?: string;
       user?: SessionUser;
     };
     if (!res.ok || !json.user) {
-      setServerError(json.error ?? "Sign in failed. Please try again.");
+      setServerError(
+        res.status === 401 || res.status === 409 || res.ok
+          ? "Email or password is incorrect. Accounts you register are saved in this browser only."
+          : (json.error ?? "Sign in failed. Please try again."),
+      );
       return;
     }
     setUser(json.user);
     await seedDemoOrders(json.user.email);
     toast.success(`Welcome back, ${json.user.name}`);
-    router.push(safeNext(sp.get("next")));
+    window.location.assign(safeNext(sp.get("next")));
   }
 
   return (
@@ -133,10 +150,17 @@ export function LoginForm() {
           <span className="sr-only">Fill demo credentials</span>
         </button>
         <p className="text-muted-foreground mt-3 text-xs">
-          Admin (admin@demo.com / admin1234) signs in on the separate admin app.
+          Admin (admin@demo.com / admin1234) signs in on the{" "}
+          <a
+            href={site.adminUrl}
+            className="text-foreground font-medium underline underline-offset-4"
+          >
+            separate admin app
+          </a>
+          .
         </p>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5">
+      <form {...NO_JS_FORM} onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5">
         <TextField
           name="email"
           label="Email"
@@ -176,7 +200,6 @@ export function LoginForm() {
 }
 
 export function RegisterForm() {
-  const router = useRouter();
   const sp = useSearchParams();
   const setUser = useSession((s) => s.set);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -191,6 +214,10 @@ export function RegisterForm() {
 
   async function onSubmit(values: RegisterInput) {
     setServerError(null);
+    if (localAccountExists(values.email)) {
+      setServerError("An account with this email already exists in this browser. Sign in instead.");
+      return;
+    }
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -205,6 +232,7 @@ export function RegisterForm() {
       setServerError(json.error ?? "Couldn't create your account.");
       return;
     }
+    await saveLocalAccount(json.user.email, json.user.name, values.password);
     await getDataAdapter().saveProfile({
       email: json.user.email,
       name: json.user.name,
@@ -216,12 +244,12 @@ export function RegisterForm() {
     toast.success("Account created", {
       description: "Demo account: data is deleted after 14 days.",
     });
-    router.push(safeNext(sp.get("next")));
+    window.location.assign(safeNext(sp.get("next")));
   }
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5">
+      <form {...NO_JS_FORM} onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5">
         <TextField
           name="name"
           label="Full name"

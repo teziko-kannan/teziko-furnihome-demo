@@ -8,6 +8,7 @@ import { loginSchema, type LoginInput } from "@teziko/validators";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { NO_JS_FORM } from "@/lib/no-js-form";
 
 export function AdminLoginForm() {
   const router = useRouter();
@@ -52,7 +53,7 @@ export function AdminLoginForm() {
           admin@demo.com / admin1234 <span className="sr-only">(fill the form)</span>
         </button>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5">
+      <form {...NO_JS_FORM} onSubmit={handleSubmit(onSubmit)} noValidate className="grid gap-5">
         <Field id="a-email" label="Email" error={errors.email?.message} required>
           <Input
             id="a-email"

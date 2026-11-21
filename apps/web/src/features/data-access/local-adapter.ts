@@ -1,7 +1,7 @@
 import type { CustomerProfile, Order } from "@teziko/types";
 import { RETENTION_MS, type DataAdapter, type UserReview } from "./types";
 
-type Collection = "orders" | "profiles" | "reviews" | "contact" | "newsletter";
+type Collection = "orders" | "profiles" | "reviews" | "contact" | "newsletter" | "accounts";
 type Stamped = { createdAt: string };
 
 const PREFIX = "tz-data:";
@@ -24,7 +24,15 @@ function write<T extends Stamped>(c: Collection, rows: T[]) {
   }
 }
 
-const COLLECTIONS: Collection[] = ["orders", "profiles", "reviews", "contact", "newsletter"];
+// "accounts" holds locally registered sign-ins (see features/account/local-accounts.ts).
+const COLLECTIONS: Collection[] = [
+  "orders",
+  "profiles",
+  "reviews",
+  "contact",
+  "newsletter",
+  "accounts",
+];
 
 export const localAdapter: DataAdapter = {
   kind: "local",

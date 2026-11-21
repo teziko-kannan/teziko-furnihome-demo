@@ -8,7 +8,7 @@ const heading = Fraunces({ subsets: ["latin"], variable: "--font-heading", displ
 const body = Manrope({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "Teziko Admin", template: "%s | Teziko Admin" },
+  title: { default: "Home Vibe Admin", template: "%s | Home Vibe Admin" },
   robots: { index: false, follow: false, nocache: true },
 };
 
@@ -19,6 +19,21 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: revealBootScript }} />
       </head>
       <body className="bg-muted/50 min-h-dvh">
+        <noscript>
+          <div
+            style={{
+              background: "#ff4848",
+              color: "#000",
+              padding: "10px 16px",
+              textAlign: "center",
+              fontSize: 14,
+              fontWeight: 600,
+            }}
+          >
+            JavaScript is turned off. You can browse, but forms (sign in, checkout, contact) need
+            JavaScript.
+          </div>
+        </noscript>
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>

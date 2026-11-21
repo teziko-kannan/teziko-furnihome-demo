@@ -62,9 +62,10 @@ export async function POST(req: Request) {
     demo: true,
   };
 
+  // Every attempt reaches the admin payments feed; only successful orders are stored as customer orders.
   pushToFeed(order);
   try {
-    await insertOrder(order);
+    if (!failed) await insertOrder(order);
   } catch {
     return jsonError("Could not save your order. Please try again.", 503);
   }

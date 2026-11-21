@@ -7,6 +7,7 @@ export interface CardProduct {
   slug: string;
   name: string;
   brandName: string;
+  subcategory: string;
   subcategoryName: string;
   department: Department;
   kind: ProductKind;
@@ -33,6 +34,7 @@ export function toCard(p: Product): CardProduct {
     slug: p.slug,
     name: p.name,
     brandName: brandBySlug.get(p.brand)?.name ?? p.brand,
+    subcategory: p.subcategory,
     subcategoryName: categoryBySlug.get(p.subcategory)?.name ?? "",
     department: p.department,
     kind: p.kind,

@@ -52,8 +52,15 @@ export function OrderSummary({
           value={<span className="text-success">−{formatINR(quote.couponDiscount)}</span>}
         />
       ) : null}
+      <div className="border-border space-y-2.5 border-t pt-2.5">
+        <Row
+          label="Taxable value"
+          value={formatINR(quote.subtotal - quote.couponDiscount - quote.gstIncluded)}
+        />
+        <Row label="GST" value={formatINR(quote.gstIncluded)} />
+      </div>
       <Row
-        label="Delivery"
+        label="Shipping"
         value={
           quote.shipping === 0 ? (
             <span className="text-success">Free</span>
@@ -67,7 +74,7 @@ export function OrderSummary({
         <AnimatedPrice value={quote.total} className="text-lg font-semibold" />
       </div>
       <p className="text-muted-foreground text-xs">
-        Inclusive of GST {formatINR(quote.gstIncluded)}
+        Prices include GST at indicative rates; the GST line above is already part of the total.
       </p>
     </div>
   );

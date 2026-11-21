@@ -1,4 +1,4 @@
-import { addressSchema, profileSchema } from "@teziko/validators";
+import { addressFields, profileSchema, refineAddress } from "@teziko/validators";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession } from "@/lib/server/auth";
@@ -8,7 +8,11 @@ import { supabaseEnabled } from "@/lib/server/supabase";
 
 const bodySchema = profileSchema.extend({
   addresses: z
-    .array(addressSchema.extend({ id: z.string().max(40), isDefault: z.boolean() }))
+    .array(
+      addressFields
+        .extend({ id: z.string().max(40), isDefault: z.boolean() })
+        .superRefine(refineAddress),
+    )
     .max(10),
 });
 

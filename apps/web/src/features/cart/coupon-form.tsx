@@ -6,6 +6,7 @@ import { TicketPercentIcon, XIcon } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import type { PriceBreakdown } from "@teziko/types";
 import { useCart } from "../shopper/stores";
+import { NO_JS_FORM } from "@/lib/no-js-form";
 
 export function CouponForm({ quote }: { quote: PriceBreakdown | null }) {
   const couponCode = useCart((s) => s.couponCode);
@@ -42,7 +43,7 @@ export function CouponForm({ quote }: { quote: PriceBreakdown | null }) {
   const error = couponCode && quote?.couponError ? quote.couponError : null;
 
   return (
-    <form onSubmit={onSubmit} className="space-y-1.5" noValidate>
+    <form {...NO_JS_FORM} onSubmit={onSubmit} className="space-y-1.5" noValidate>
       <label htmlFor="coupon" className="text-sm font-medium">
         Coupon code
       </label>

@@ -1,11 +1,17 @@
 import { getKindImage } from "@teziko/data/images";
 import { Button } from "@teziko/ui/components/button";
+import type { Metadata } from "next";
 import Link from "next/link";
+import { DocumentTitle } from "@/components/document-title";
 import { ProductImage } from "@/components/product-image";
+import { site } from "@/lib/site";
+
+export const metadata: Metadata = { title: "Page not found", robots: { index: false } };
 
 export default function NotFound() {
   return (
     <div className="container-page grid items-center gap-10 py-16 sm:py-24 lg:grid-cols-2">
+      <DocumentTitle title={`Page not found | ${site.name}`} />
       <div>
         <p className="text-muted-foreground text-sm font-semibold tracking-[0.2em] uppercase">
           404

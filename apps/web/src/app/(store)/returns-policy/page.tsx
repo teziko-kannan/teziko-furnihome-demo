@@ -5,7 +5,7 @@ import { Prose } from "@/components/prose";
 
 export const metadata: Metadata = {
   title: "Returns and refunds",
-  description: "How returns, replacements and refunds would work at Teziko Home (demo policy).",
+  description: "How returns, replacements and refunds would work at Home Vibe (demo policy).",
   alternates: { canonical: "/returns-policy" },
 };
 

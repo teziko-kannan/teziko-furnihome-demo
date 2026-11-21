@@ -1,9 +1,9 @@
 "use client";
 
 import { getKindImage } from "@teziko/data/images";
+import { scoreSearch } from "@teziko/data/search";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -49,7 +49,25 @@ export function SearchPalette({ nav }: { nav: NavDepartment[] }) {
     router.push(href);
   }
 
-  const categories = nav.flatMap((d) => d.columns.map((c) => ({ ...c, dep: d.name })));
+  // Our own synonym-aware ranking (cmdk's fuzzy subsequence filter is disabled below), so the
+  // overlay agrees with the full results page: "fridge" → refrigerators, never a study desk.
+  const allCategories = nav.flatMap((d) => d.columns.map((c) => ({ ...c, dep: d.name })));
+  const q = query.trim();
+  const products = (index ?? [])
+    .map((p) => ({
+      p,
+      s: q
+        ? scoreSearch(q, { name: p.name, keywords: `${p.category} ${p.keywords}`, body: p.body })
+        : 0,
+    }))
+    .filter((x) => !q || x.s > 0)
+    .sort((a, b) => b.s - a.s)
+    .slice(0, q ? 8 : 6)
+    .map((x) => x.p);
+  const categories = allCategories.filter(
+    (c) =>
+      !q || scoreSearch(q, { name: c.name, keywords: `${c.dep} ${c.slug.replace(/-/g, " ")}` }) > 0,
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -61,7 +79,7 @@ export function SearchPalette({ nav }: { nav: NavDepartment[] }) {
         <DialogDescription className="sr-only">
           Type to search products and categories. Use arrow keys to move and Enter to open.
         </DialogDescription>
-        <Command loop>
+        <Command loop shouldFilter={false}>
           <CommandInput
             value={query}
             onValueChange={setQuery}
@@ -69,7 +87,6 @@ export function SearchPalette({ nav }: { nav: NavDepartment[] }) {
             aria-label="Search"
           />
           <CommandList>
-            <CommandEmpty>No matches for “{query}”. Try “sofa”, “AC” or “rug”.</CommandEmpty>
             {query.trim() ? (
               <CommandGroup heading="Search">
                 <CommandItem
@@ -94,12 +111,17 @@ export function SearchPalette({ nav }: { nav: NavDepartment[] }) {
                   : "Loading products…"}
               </p>
             ) : null}
+            {q && products.length === 0 && categories.length === 0 && index !== null ? (
+              <p className="text-muted-foreground px-3 py-8 text-center text-sm" role="status">
+                No matches for “{q}”. Try “sofa”, “fridge” or “rug”.
+              </p>
+            ) : null}
             <CommandGroup heading="Products">
-              {(index ?? []).map((p) => (
+              {products.map((p) => (
                 <CommandItem
                   key={p.id}
                   value={`${p.name} ${p.id}`}
-                  keywords={[p.brand, p.category, p.keywords]}
+
                   onSelect={() => go(`/product/${p.slug}`)}
                 >
                   <span className="bg-muted relative size-10 shrink-0 overflow-hidden rounded-md">
@@ -128,7 +150,7 @@ export function SearchPalette({ nav }: { nav: NavDepartment[] }) {
                 <CommandItem
                   key={c.slug}
                   value={`category ${c.name}`}
-                  keywords={[c.dep]}
+
                   onSelect={() => go(c.href)}
                 >
                   <LayoutGridIcon className="text-muted-foreground size-4" aria-hidden="true" />

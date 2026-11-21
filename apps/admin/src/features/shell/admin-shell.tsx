@@ -63,7 +63,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 function Brand() {
   return (
     <span className="font-display flex items-baseline gap-1 text-2xl text-white">
-      teziko
+      Home Vibe
       <span aria-hidden="true" className="bg-accent inline-block size-1.5 rounded-full" />
       <span className="text-chrome-muted ml-1 font-sans text-[10px] font-semibold tracking-[0.2em] uppercase">
         Admin

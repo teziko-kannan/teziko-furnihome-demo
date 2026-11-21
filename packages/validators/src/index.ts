@@ -1,3 +1,4 @@
+import { checkAddressConsistency } from "@teziko/data/pincode";
 import { z } from "zod";
 
 const phone = z
@@ -34,7 +35,8 @@ export const registerSchema = z.object({
 });
 export type RegisterInput = z.infer<typeof registerSchema>;
 
-export const addressSchema = z.object({
+/** Raw address fields. Use `addressSchema` (or apply `refineAddress`) so PIN/state/city are cross-checked. */
+export const addressFields = z.object({
   label: z.string().trim().min(1, "Give this address a label").max(30),
   fullName: name,
   phone,
@@ -44,6 +46,17 @@ export const addressSchema = z.object({
   state: z.string().trim().min(2, "Select your state").max(60),
   pincode,
 });
+
+/** Cross-field check: the PIN must exist and belong to the state; well-known cities must match the state. */
+export function refineAddress(
+  a: { pincode: string; state: string; city: string },
+  ctx: z.RefinementCtx,
+) {
+  const r = checkAddressConsistency(a);
+  if (!r.ok) ctx.addIssue({ code: "custom", path: [r.field], message: r.message });
+}
+
+export const addressSchema = addressFields.superRefine(refineAddress);
 export type AddressInput = z.infer<typeof addressSchema>;
 
 export const profileSchema = z.object({
@@ -63,7 +76,7 @@ export const cartLineSchema = z.object({
 /** What the client sends when placing an order. Amounts are never trusted from the client. */
 export const placeOrderSchema = z.object({
   email: emailSchema,
-  address: addressSchema.omit({ label: true }),
+  address: addressFields.omit({ label: true }).superRefine(refineAddress),
   lines: z.array(cartLineSchema).min(1, "Your cart is empty").max(30),
   couponCode: z.string().trim().toUpperCase().max(20).optional().nullable(),
   paymentMethod: paymentMethodSchema,

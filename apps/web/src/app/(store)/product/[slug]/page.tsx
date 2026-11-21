@@ -25,6 +25,9 @@ import { RecentlyViewed } from "@/features/product/recently-viewed";
 import { Reviews } from "@/features/product/reviews";
 import { ViewIn3D } from "@/features/product/view-in-3d";
 
+// Every product is known at build time; unknown slugs get a real 404 (not a streamed 200).
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
 }
@@ -105,9 +108,6 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
                 <a href="#reviews" className="rounded-sm hover:underline">
                   <Rating value={product.rating} count={product.reviewCount} />
                 </a>
-                <span className="text-muted-foreground text-xs">
-                  SKU {product.variants[0]?.sku}
-                </span>
               </div>
               <p className="text-muted-foreground mt-4 text-[15px] leading-relaxed">
                 {product.shortDescription}

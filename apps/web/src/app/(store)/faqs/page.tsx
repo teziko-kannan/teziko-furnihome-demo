@@ -13,7 +13,7 @@ import { PageShell } from "@/components/page-shell";
 export const metadata: Metadata = {
   title: "FAQs",
   description:
-    "Answers about orders, delivery, installation, returns and payments at the Teziko Home demo store.",
+    "Answers about orders, delivery, installation, returns and payments at the Home Vibe demo store.",
   alternates: { canonical: "/faqs" },
 };
 

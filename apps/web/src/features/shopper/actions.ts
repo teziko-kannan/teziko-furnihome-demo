@@ -3,7 +3,14 @@
 import { toast } from "@teziko/ui/components/toaster";
 import { useCallback } from "react";
 import type { CardProduct } from "../catalog/card-data";
-import { COMPARE_MAX, useCart, useCompare, useUi, useWishlist } from "./stores";
+import {
+  COMPARE_MAX,
+  useCart,
+  useCompare,
+  useUi,
+  useWishlist,
+  type CompareCategory,
+} from "./stores";
 
 /** Adds a product variant to the cart with feedback. */
 export function useAddToCart() {
@@ -66,17 +73,30 @@ export function useToggleWishlist() {
 
 export function useToggleCompare() {
   const toggle = useCompare((s) => s.toggle);
+  const replace = useCompare((s) => s.replace);
   return useCallback(
-    (id: string, name: string) => {
-      const r = toggle(id);
+    (id: string, name: string, category: CompareCategory) => {
+      const r = toggle(id, category);
       if (r === "full")
         toast.error(`You can compare up to ${COMPARE_MAX} products`, {
           description: "Remove one from the compare list first.",
         });
-      else
+      else if (r === "mismatch") {
+        const current = useCompare.getState().category;
+        toast.error("Compare products from the same category", {
+          description: `Your list has ${current?.name ?? "other products"}. ${name} is in ${category.name}.`,
+          action: {
+            label: `Compare ${category.name}`,
+            onClick: () => {
+              replace(id, category);
+              toast("Started a new comparison", { description: name });
+            },
+          },
+        });
+      } else
         toast(r === "added" ? "Added to compare" : "Removed from compare", { description: name });
       return r;
     },
-    [toggle],
+    [toggle, replace],
   );
 }

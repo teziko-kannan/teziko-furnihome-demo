@@ -1,6 +1,7 @@
 "use client";
 
 import { getProductImages } from "@teziko/data/images";
+import { deliveryEstimate } from "@teziko/data/pincode";
 import { Button } from "@teziko/ui/components/button";
 import { Input } from "@teziko/ui/components/input";
 import type { Product } from "@teziko/types";
@@ -16,6 +17,7 @@ import { useAddToCart, useToggleCompare } from "../shopper/actions";
 import { useCompare, useRecentlyViewed } from "../shopper/stores";
 import { WishlistButton } from "../shopper/wishlist-button";
 import { Gallery } from "./gallery";
+import { NO_JS_FORM } from "@/lib/no-js-form";
 
 type Props = {
   product: Pick<
@@ -98,6 +100,9 @@ export function PurchasePanel({ product, card, children }: Props) {
         </div>
         <p className="text-muted-foreground -mt-4 text-xs">
           Inclusive of all taxes. EMI options shown at checkout (demo).
+          <span className="ml-2" aria-live="polite">
+            SKU {variant.sku}
+          </span>
         </p>
 
         <fieldset>
@@ -200,7 +205,12 @@ export function PurchasePanel({ product, card, children }: Props) {
           <Button
             size="lg"
             variant="outline"
-            onClick={() => toggleCompare(product.id, product.name)}
+            onClick={() =>
+              toggleCompare(product.id, product.name, {
+                slug: card.subcategory,
+                name: card.subcategoryName,
+              })
+            }
             aria-pressed={inCompare}
           >
             <GitCompareArrowsIcon aria-hidden="true" />
@@ -239,20 +249,23 @@ function DeliveryCheck({ days }: { days: [number, number] }) {
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!/^[1-9]\d{5}$/.test(pin)) {
-      setResult({ ok: false, text: "Enter a valid 6-digit PIN code." });
+    if (!/^\d{6}$/.test(pin)) {
+      setResult({ ok: false, text: "Enter a 6-digit PIN code." });
       return;
     }
-    const remote = /^(79|744|737|194)/.test(pin);
-    const eta = deliveryWindow(remote ? [days[0] + 3, days[1] + 4] : days);
+    const est = deliveryEstimate(pin, days);
+    if (!est) {
+      setResult({ ok: false, text: `${pin} isn't a valid or serviceable PIN code.` });
+      return;
+    }
     setResult({
       ok: true,
-      text: `Delivers ${eta}${remote ? " (remote area)" : ""}. Simulated estimate.`,
+      text: `Delivers to ${est.state}, ${deliveryWindow(est.days)}${est.extra >= 4 ? " (remote area)" : ""}. Simulated estimate.`,
     });
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-2" noValidate>
+    <form {...NO_JS_FORM} onSubmit={onSubmit} className="space-y-2" noValidate>
       <label htmlFor="pincode" className="text-sm font-medium">
         Check delivery
       </label>

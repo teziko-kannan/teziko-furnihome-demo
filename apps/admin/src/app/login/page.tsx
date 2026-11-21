@@ -8,7 +8,7 @@ export default function Page() {
     <main className="grid min-h-dvh lg:grid-cols-2">
       <div className="bg-chrome text-chrome-foreground hidden flex-col justify-between p-12 lg:flex">
         <span className="font-display flex items-baseline gap-1 text-3xl text-white">
-          teziko
+          Home Vibe
           <span aria-hidden="true" className="bg-accent inline-block size-2 rounded-full" />
         </span>
         <div>

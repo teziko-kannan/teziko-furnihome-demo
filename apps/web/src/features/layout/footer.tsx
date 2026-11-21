@@ -65,7 +65,7 @@ export function Footer({ nav }: { nav: NavDepartment[] }) {
         </StaggerItem>
       </Stagger>
       <div className="border-t border-white/10">
-        <div className="container-page text-chrome-muted flex flex-col gap-2 py-6 text-xs sm:flex-row sm:justify-between">
+        <div className="container-page text-chrome-muted flex flex-col gap-2 pt-6 pb-24 text-xs sm:flex-row sm:justify-between sm:pr-48 sm:pb-6">
           <p>© 2026 Teziko Solutions. Demo content. Brands shown are fictional.</p>
           <p>Prices in INR, inclusive of GST. Payments are simulated.</p>
         </div>

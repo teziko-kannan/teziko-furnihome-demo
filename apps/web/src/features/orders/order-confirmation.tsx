@@ -5,11 +5,30 @@ import { StateBlock } from "@teziko/ui/components/states";
 import { Reveal } from "@teziko/ui/motion/reveal";
 import { PackageSearchIcon } from "lucide-react";
 import Link from "next/link";
+import { useSyncExternalStore } from "react";
 import { OrderDetails } from "./order-details";
 import { SuccessCheck } from "./success-check";
 import { useOrder } from "./use-order";
 
-export function OrderConfirmation({ number, email }: { number: string; email?: string }) {
+const subscribeNoop = () => () => {};
+
+/** Email of the order just placed in this tab (kept out of the URL; see checkout-flow). */
+function lastOrderEmail(number: string) {
+  try {
+    const raw = sessionStorage.getItem("tz-last-order");
+    const parsed = raw ? (JSON.parse(raw) as { number?: string; email?: string }) : null;
+    return parsed?.number === number ? parsed.email : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function OrderConfirmation({ number }: { number: string }) {
+  const email = useSyncExternalStore(
+    subscribeNoop,
+    () => lastOrderEmail(number),
+    () => undefined,
+  );
   const { order, status, replace } = useOrder(number, email);
 
   if (status === "loading")

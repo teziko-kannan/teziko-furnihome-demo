@@ -27,6 +27,21 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: revealBootScript }} />
       </head>
       <body className="min-h-dvh">
+        <noscript>
+          <div
+            style={{
+              background: "#ff4848",
+              color: "#000",
+              padding: "10px 16px",
+              textAlign: "center",
+              fontSize: 14,
+              fontWeight: 600,
+            }}
+          >
+            JavaScript is turned off. You can browse, but forms (sign in, checkout, contact) need
+            JavaScript.
+          </div>
+        </noscript>
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>

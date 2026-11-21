@@ -17,7 +17,7 @@ export default function Page() {
     >
       <Prose>
         <p>
-          Teziko Home is a demonstration website. It is not a real shop and does not sell, ship or
+          Home Vibe is a demonstration website. It is not a real shop and does not sell, ship or
           charge for anything.
         </p>
         <h2>What we collect</h2>

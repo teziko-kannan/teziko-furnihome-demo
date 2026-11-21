@@ -141,10 +141,10 @@ export function CheckoutFlow() {
         order?: Order;
         error?: string;
       };
-      if (json.order) await getDataAdapter().saveOrder(json.order);
-      if (res.status === 402 && json.order) {
+      if (res.status === 402) {
+        // Declined attempts are not orders: nothing is saved for the shopper, so a retry yields exactly one order.
         setFailure(
-          `Payment for order ${json.order.number} was declined (simulated). Your cart is saved: try again or pick another method.`,
+          "Your payment was declined (simulated). No order was placed and your cart is saved: try again or choose another method.",
         );
         setStep(1);
         return;
@@ -153,8 +153,17 @@ export function CheckoutFlow() {
         setFailure(json.error ?? "We couldn't place your order. Please try again.");
         return;
       }
+      await getDataAdapter().saveOrder(json.order);
+      try {
+        sessionStorage.setItem(
+          "tz-last-order",
+          JSON.stringify({ number: json.order.number, email: json.order.email }),
+        );
+      } catch {
+        // Session storage unavailable: the local adapter does not need the email anyway.
+      }
       clear();
-      router.push(`/order/${json.order.number}?email=${encodeURIComponent(json.order.email)}`);
+      router.push(`/order/${json.order.number}`);
     } catch {
       setFailure("Network error. Check your connection and try again.");
     } finally {
