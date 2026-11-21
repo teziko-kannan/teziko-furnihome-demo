@@ -4,11 +4,11 @@ const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   // Replaces X-Frame-Options: SAMEORIGIN. Only this site and the Teziko Solutions
-  // website (which shows this demo in its portfolio) may embed it.
+  // website, including its Vercel address (which shows this demo in its portfolio) may embed it.
   {
     key: "Content-Security-Policy",
     value:
-      "frame-ancestors 'self' https://www.tezikosolutions.com https://tezikosolutions.com http://localhost:3000",
+      "frame-ancestors 'self' https://www.tezikosolutions.com https://tezikosolutions.com https://teziko-solutions-website.vercel.app http://localhost:3000",
   },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
 ];
